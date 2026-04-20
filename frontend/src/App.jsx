@@ -11,7 +11,13 @@ import Shop from './pages/Shop';
 import Cart from './pages/Cart';
 import ThankYou from './pages/ThankYou';
 import ProtectedRoute from './components/ProtectedRoute';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+
+
+
 const App = () => {
+
+  const queryClient = QueryClient()
   const fetchUser = useAuthStore((state) => state.fetchUser)
   const loading = useAuthStore((state) => state.loading)
   const fetchCart = useCartStore((state) => state.fetchCart)
@@ -30,26 +36,29 @@ const App = () => {
   }
   return (
     <div>
-      <Routes>
-        <Route path='/' element={<Home />} />
-        <Route path='/signup' element={<Signup />} />
-        <Route path='/login' element={<Login />} />
-        <Route path='/shop' element={
-          <ProtectedRoute>
-            <Shop />
-          </ProtectedRoute>
-        } />
-        <Route path='/cart' element={
-          <ProtectedRoute>
-            <Cart />
-          </ProtectedRoute>
-        } />  
-        <Route path='/thankyou' element={
-          <ProtectedRoute>
-            <ThankYou />
-          </ProtectedRoute>
-        } />
-      </Routes>
+      <QueryClientProvider client={queryClient}>
+        <Routes>
+          <Route path='/' element={<Home />} />
+          <Route path='/signup' element={<Signup />} />
+          <Route path='/login' element={<Login />} />
+          <Route path='/shop' element={
+            <ProtectedRoute>
+              <Shop />
+            </ProtectedRoute>
+          } />
+          <Route path='/cart' element={
+            <ProtectedRoute>
+              <Cart />
+            </ProtectedRoute>
+          } />
+          <Route path='/thankyou' element={
+            <ProtectedRoute>
+              <ThankYou />
+            </ProtectedRoute>
+          } />
+        </Routes>
+      </QueryClientProvider>
+
       <ToastContainer />
     </div>
   )

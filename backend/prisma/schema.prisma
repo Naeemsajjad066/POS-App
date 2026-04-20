@@ -13,18 +13,31 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User{
-  id Int @id @default(autoincrement())
-  name String
-  email String @unique
-  password String
-  role String @default("user")
-  cart Cart[]
-}
-model Cart{
+model User {
   id       Int    @id @default(autoincrement())
-  userId   Int
-  product  String
-  quantity Int    @default(1)
-  user     User   @relation(fields: [userId], references: [id])
+  name     String
+  email    String @unique
+  password String
+  role     String @default("user")
+
+  cart     Cart[]
+}
+
+model Product {
+  id        Int      @id @default(autoincrement())
+  name      String
+  price     Float
+  createdAt DateTime @default(now())
+
+  cartItems Cart[]
+}
+
+model Cart {
+  id        Int    @id @default(autoincrement())
+  userId    Int
+  productId Int
+  quantity  Int    @default(1)
+
+  user      User    @relation(fields: [userId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
 }

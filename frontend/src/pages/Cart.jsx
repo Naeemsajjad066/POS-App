@@ -71,7 +71,7 @@ const Cart = () => {
                                             🛒
                                         </div>
                                         <div>
-                                            <h3 className="font-semibold text-gray-800 text-base">{item.product}</h3>
+                                            <h3 className="font-semibold text-gray-800 text-base">{item.product?.name || "Unknown Product"}</h3>
                                             <p className="text-xs text-gray-400 mt-0.5">Item #{item.id}</p>
                                         </div>
                                     </div>
@@ -102,9 +102,9 @@ const Cart = () => {
                                 </span>
                             </div>
                             <div className="border-t pt-4 flex justify-between font-bold text-gray-800 text-base">
-                                <span>Total</span>
+                                <span>Total Price</span>
                                 <span className="text-indigo-600">
-                                    {cart.length} item{cart.length !== 1 ? 's' : ''}
+                                    Rs. {cart.reduce((sum, item) => sum + (item.quantity * (item.product?.price || 0)), 0).toFixed(2)}
                                 </span>
                             </div>
                             <button onClick={async () => {

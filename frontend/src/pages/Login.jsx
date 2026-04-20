@@ -13,7 +13,7 @@ const Login = () => {
     })
     const login = useAuthStore((state) => state.login)
     const fetchUser = useAuthStore((state) => state.fetchUser)
-    const user=useAuthStore((state)=>state.user)
+    const user = useAuthStore((state) => state.user)
     const handleOnchange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value })
     }
@@ -29,7 +29,7 @@ const Login = () => {
             toast.error(error.response?.data?.message)
         }
     }
-    if(user){
+    if (user) {
         navigate("/")
     }
     return (

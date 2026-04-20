@@ -1,103 +1,117 @@
 import prisma from "../db/prismaClient.js";
 
-export const addToCart=async(req,res)=>{
-    try {
-        const {product,quantity}=req.body;
-        if(!product){
-            return res.status(400).json({
-                message:"Product is required"
-            })
+
+export const addToCart = async (req, res) => {
+  try {
+    const { productId, quantity } = req.body;
+
+    if (!productId) {
+      return res.status(400).json({
+        message: "ProductId is required",
+      });
+    }
+
+    // check if item already exists
+    const existingItem = await prisma.cart.findFirst({
+      where: {
+        userId: req.user.id,
+        productId: Number(productId),
+      },
+    });
+
+    if (existingItem) {
+      const updated = await prisma.cart.update({
+        where: {
+          id: existingItem.id,
+        },
+        data: {
+          quantity: existingItem.quantity + (quantity || 1),
+        },
+        include: {
+          product: true
         }
+      });
 
-        // const existingItem=await prisma.cart.findFirst({
-        //     where:{
-        //         userId:req.user.id,
-        //         product,
-        //     }
-        // })
-
-        // if(existingItem){
-        //   const updatedItem= await prisma.cart.update({
-        //         where:{
-        //             id:existingItem.id
-        //         },
-        //         data:{
-        //             quantity:existingItem.quantity + (quantity || 1)
-        //         }
-        //     })
-        //     return res.status(200).json({cartItem:updatedItem})
-        // }
-        const cartItem=await prisma.cart.create({
-            data:{
-                userId:req.user.id,
-                product,
-                quantity:quantity || 1
-            }
-        })
-        res.status(201).json({
-            message:"Added to cart ",
-            cartItem
-        })
-    } catch (error) {
-        console.log(error,"Error at add to cart")
-        res.status(500).json({
-            message:"Failed to add Item",
-            error:error.message
-        })
+      return res.status(200).json(updated);
     }
-}
 
-export const getCart=async(req,res)=>{
-    try {
-        const cart=await prisma.cart.findMany({
-            where:{
-                userId:req.user.id,
-            }
-        })
-        res.status(200).json(cart)
-    } catch (error) {
-        console.log("Failed to get Cart",error);
-        res.status(500).json({
-            message:"Internal Server Error ",
-            error:error.message
-        })
-    }
-}
+    const cartItem = await prisma.cart.create({
+      data: {
+        userId: req.user.id,
+        productId: Number(productId),
+        quantity: quantity || 1,
+      },
+      include: {
+        product: true
+      }
+    });
 
-export const deleteCartItem=async(req,res)=>{
-    try {
-        const id=req.params.id;
+    res.status(201).json(cartItem);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Failed to add item",
+      error: error.message,
+    });
+  }
+};
 
-        const deletedItem=await prisma.cart.deleteMany({
-            where:{
-                id:Number(id),
-                userId:req.user.id
-            }
-        })
-        res.status(200).json({
-            message:"Item deleted from cart",
-            deletedItem
-        })
+export const getCart = async (req, res) => {
+  try {
+    const cart = await prisma.cart.findMany({
+      where: {
+        userId: req.user.id,
+      },
+      include: {
+        product: true, // 🔥 join product data
+      },
+    });
 
-    } catch (error) {
-        console.log("Error in deleted item cart")
-        res.status(500).json({message:"Internal Server Error"})
-    }
-}
+    res.status(200).json(cart);
+  } catch (error) {
+    res.status(500).json({
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
+};
 
-export const EmptyCart=async (req,res)=>{
-    try {
-         await prisma.cart.deleteMany({
-            where:{
-                userId:req.user.id,
-            }
-        })
-        res.status(200).json({
-            message:"Cart is empty Now"
-        })
-    } catch (error) {
-        res.status(500).json({
-            message:"Internal Server Issue "
-        })
-    }
-}
+export const deleteCartItem = async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+
+    const deleted = await prisma.cart.deleteMany({
+      where: {
+        id,
+        userId: req.user.id,
+      },
+    });
+
+    res.status(200).json({
+      message: "Item deleted",
+      deleted,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+};
+
+export const EmptyCart = async (req, res) => {
+  try {
+    await prisma.cart.deleteMany({
+      where: {
+        userId: req.user.id,
+      },
+    });
+
+    res.status(200).json({
+      message: "Cart emptied successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Internal Server Issue",
+    });
+  }
+};
