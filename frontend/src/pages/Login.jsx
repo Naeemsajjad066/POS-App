@@ -4,6 +4,7 @@ import API from '../api'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import useAuthStore from '../store/authStore'
+import ThemeToggle from '../components/ThemeToggle'
 
 const Login = () => {
     const navigate = useNavigate()
@@ -33,15 +34,18 @@ const Login = () => {
         navigate("/")
     }
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-900 relative">
+            <div className="absolute top-4 right-4">
+                <ThemeToggle />
+            </div>
             <form
                 onSubmit={handleSubmit}
-                className="bg-white w-full max-w-md p-8 rounded-2xl shadow-lg space-y-5"
+                className="bg-white dark:bg-gray-800 w-full max-w-md p-8 rounded-2xl shadow-lg space-y-5"
             >
                 {/* Header */}
                 <div className="text-center">
-                    <h1 className="text-2xl font-bold text-gray-900">Welcome Back</h1>
-                    <p className="text-gray-500 text-sm">
+                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Welcome Back</h1>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm">
                         Login to continue
                     </p>
                 </div>
@@ -53,7 +57,7 @@ const Login = () => {
                     value={form.email}
                     placeholder="Enter your email"
                     onChange={handleOnchange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
 
                 {/* Password */}
@@ -63,7 +67,7 @@ const Login = () => {
                     value={form.password}
                     placeholder="Enter your password"
                     onChange={handleOnchange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
 
                 {/* Button */}
@@ -75,11 +79,11 @@ const Login = () => {
                 </button>
 
                 {/* Footer */}
-                <p className="text-center text-sm text-gray-500">
+                <p className="text-center text-sm text-gray-500 dark:text-gray-400">
                     Don’t have an account?{" "}
                     <span
                         onClick={() => navigate("/signup")}
-                        className="text-indigo-600 font-medium cursor-pointer hover:underline"
+                        className="text-indigo-600 dark:text-indigo-400 font-medium cursor-pointer hover:underline"
                     >
                         Sign up
                     </span>

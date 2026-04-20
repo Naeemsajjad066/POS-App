@@ -1,7 +1,11 @@
-import axios from "axios";
 import API from "../api";
 
-export const fetchProducts=async()=>{
-    const res=await API.get('/products')
+export const fetchProducts = async () => {
+    const res = await API.get('/products')
     return res.data.products
+}
+
+export const createProduct = async (productData) => {
+    const res = await API.post("/products", productData)
+    return res.data
 }

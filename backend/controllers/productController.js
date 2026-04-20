@@ -4,7 +4,7 @@ import prisma from "../db/prismaClient.js";
 
 export const addProduct = async (req, res) => {
     try {
-        const { name, price } = req.body;
+        const { name, price } = req.body || {};
 
         if (!name || !price) {
             return res.status(400).json({ message: "Name and Price is required" })

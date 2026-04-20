@@ -1,30 +1,39 @@
 import React, { useEffect } from 'react'
 import { Routes, Route } from 'react-router-dom'
-import 'react-toastify/dist/ReactToastify.css';
+import 'react-toastify/dist/ReactToastify.css'
 import { ToastContainer } from 'react-toastify'
-import Home from './pages/Home';
-import Signup from './pages/Signup';
-import Login from './pages/Login';
-import useAuthStore from './store/authStore';
-import useCartStore from './store/cartStore';
-import Shop from './pages/Shop';
-import Cart from './pages/Cart';
-import ThankYou from './pages/ThankYou';
-import ProtectedRoute from './components/ProtectedRoute';
+import useThemeStore from './store/themeStore'
+import Home from './pages/Home'
+import Signup from './pages/Signup'
+import Login from './pages/Login'
+import Shop from './pages/Shop'
+import Cart from './pages/Cart'
+import ThankYou from './pages/ThankYou'
+import ProtectedRoute from './components/ProtectedRoute'
+import useAuthStore from './store/authStore'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
-
+const queryClient = new QueryClient()
 
 const App = () => {
-
-  const queryClient = QueryClient()
+  const theme = useThemeStore((state) => state.theme)
   const fetchUser = useAuthStore((state) => state.fetchUser)
   const loading = useAuthStore((state) => state.loading)
-  const fetchCart = useCartStore((state) => state.fetchCart)
+
+ useEffect(() => {
+    const root = window.document.documentElement;
+
+    if (theme === "dark") {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
+  }, [theme]);
+
   useEffect(() => {
-    fetchUser(),
-      fetchCart()
-  }, [])
+    fetchUser()
+  }, [fetchUser])
+
   if (loading) {
     return (
       <div className="h-screen flex items-center justify-center">
@@ -34,33 +43,46 @@ const App = () => {
       </div>
     )
   }
+
   return (
-    <div>
-      <QueryClientProvider client={queryClient}>
-        <Routes>
-          <Route path='/' element={<Home />} />
-          <Route path='/signup' element={<Signup />} />
-          <Route path='/login' element={<Login />} />
-          <Route path='/shop' element={
+    <div className='min-h-screen bg-white dark:bg-gray-900 text-black dark:text-white'  > 
+         <QueryClientProvider client={queryClient}>
+      <Routes>
+        <Route path='/' element={<Home />} />
+        <Route path='/signup' element={<Signup />} />
+        <Route path='/login' element={<Login />} />
+
+        <Route
+          path='/shop'
+          element={
             <ProtectedRoute>
               <Shop />
             </ProtectedRoute>
-          } />
-          <Route path='/cart' element={
+          }
+        />
+
+        <Route
+          path='/cart'
+          element={
             <ProtectedRoute>
               <Cart />
             </ProtectedRoute>
-          } />
-          <Route path='/thankyou' element={
+          }
+        />
+
+        <Route
+          path='/thankyou'
+          element={
             <ProtectedRoute>
               <ThankYou />
             </ProtectedRoute>
-          } />
-        </Routes>
-      </QueryClientProvider>
+          }
+        />
+      </Routes>
 
       <ToastContainer />
-    </div>
+    </QueryClientProvider></div>
+
   )
 }
 

@@ -33,7 +33,6 @@ const useProductStore = create((set) => ({
     } catch (error) {
       set({ loading: false })
       toast.error(error.response?.data?.message || "Failed to add product")
-      console.log(error)
       return false;
     }
   }
