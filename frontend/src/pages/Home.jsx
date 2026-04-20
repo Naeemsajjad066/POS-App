@@ -46,7 +46,7 @@ const Home = () => {
 
             <button
               onClick={() => navigate('/shop')}
-              className="text-gray-600 dark:text-gray-300 hover:text-indigo-600 font-medium"
+              className="text-gray-600 dark:text-gray-300 hover:text-indigo-600 font-medium cursor-pointer"
             >
               Shop
             </button>
@@ -86,7 +86,7 @@ const Home = () => {
 
                 <button
                   onClick={handleLogout}
-                  className="text-sm text-gray-500 hover:text-red-500"
+                  className="text-sm text-gray-500 hover:text-red-500 cursor-pointer"
                 >
                   Logout
                 </button>
@@ -113,7 +113,7 @@ const Home = () => {
 
           <button
             onClick={() => navigate("/shop")}
-            className="px-8 py-4 bg-indigo-600 text-white rounded-full"
+            className="px-8 py-4 bg-indigo-600 text-white rounded-full cursor-pointer"
           >
             Shop Collection
           </button>

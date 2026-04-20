@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { fetchProducts, createProduct } from '../api/productApi'
+import { fetchProducts, createProduct, deleteProduct } from '../api/productApi'
 import { fetchCart, addToCart } from '../api/cartApi'
 import ThemeToggle from '../components/ThemeToggle'
+import { toast } from 'react-toastify'
 
 const Shop = () => {
   const navigate = useNavigate()
@@ -36,6 +37,14 @@ const Shop = () => {
       })
     }
   })
+  const deleteMutation=useMutation({
+    mutationFn:deleteProduct,
+    onSuccess:()=>{
+      queryClient.invalidateQueries({
+        queryKey:["products"]
+      })
+    }
+  })
   const [showAddForm, setShowAddForm] = useState(false)
   const [newProduct, setNewProduct] = useState({ name: "", price: "" })
   const handleAddProduct = (e) => {
@@ -47,9 +56,12 @@ const Shop = () => {
       name: newProduct.name,
       price: Number(newProduct.price)
     })
-    console.log("Added")
+    toast.success("Product added")
     setNewProduct({ name: "", price: "" })
     setShowAddForm(false)
+  }
+  const handleDelete=(id)=>{
+    deleteMutation.mutate(id)
   }
 
   if (productsLoading) return <p>Loading data...</p>
@@ -125,7 +137,7 @@ const Shop = () => {
               <button
                 type="submit"
                 disabled={addMutation.isPending}
-                className="w-full bg-indigo-600 text-white py-2 rounded"
+                className="w-full bg-indigo-600 text-white py-2 rounded cursor-pointer"
               >
                 {addMutation.isPending ? "Saving..." : "Save Product"}
               </button>
@@ -140,20 +152,47 @@ const Shop = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
 
-            {productsData?.map((p) => (
-              <div key={p.id} className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
-                <h3 className="font-bold text-gray-900 dark:text-white">{p.name}</h3>
-                <p className="text-indigo-600 dark:text-indigo-400">Rs. {p.price}</p>
+{productsData?.map((p) => (
+  <div
+    key={p.id}
+    className="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-md hover:shadow-lg transition duration-300 flex flex-col justify-between"
+  >
+    <div>
+      <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
+        {p.name}
+      </h3>
 
-                <button
-                  onClick={() => addToCartMutation.mutate(p.id)}
-                  disabled={addToCartMutation.isPending && addToCartMutation.variables === p.id}
-                  className="mt-4 w-full bg-indigo-600 text-white py-2 rounded cursor-pointer"
-                >
-                  {addToCartMutation.isPending && addToCartMutation.variables === p.id ? "Adding..." : "Add to Cart"}
-                </button>
-              </div>
-            ))}
+      <p className="mt-2 text-indigo-600 dark:text-indigo-400 font-bold text-md">
+        Rs. {p.price}
+      </p>
+    </div>
+
+    <div className="mt-5 space-y-3">
+      
+      <button
+        onClick={() => addToCartMutation.mutate(p.id)}
+        disabled={
+          addToCartMutation.isPending &&
+          addToCartMutation.variables === p.id
+        }
+        className="w-full bg-indigo-600 text-white py-3 rounded-xl font-semibold text-sm hover:bg-indigo-700 transition disabled:opacity-50 cursor-pointer"
+      >
+        {addToCartMutation.isPending &&
+        addToCartMutation.variables === p.id
+          ? "Adding..."
+          : "🛒 Add to Cart"}
+      </button>
+
+      <button
+        onClick={() => handleDelete(p.id)}
+        className="text-xs text-red-500 dark:text-red-400 hover:underline text-right cursor-pointer"
+      >
+        Delete
+      </button>
+
+    </div>
+  </div>
+))}
 
           </div>
         )}
